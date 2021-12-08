@@ -1,0 +1,44 @@
+- name: Place ~/.gnupg/gpg-agent.conf
+  ansible.builtin.copy:
+    src: gpg-agent.conf
+    dest: ~/.gnupg/gpg-agent.conf
+    mode: "0644"
+  register: gpg_agent_conf
+
+- name: Place ~/.gnupg/gpg.conf
+  ansible.builtin.copy:
+    src: gpg.conf
+    dest: ~/.gnupg/gpg.conf
+    mode: "0644"
+  register: gpg_conf
+
+- name: Place ~/.local/bin/gpg-agent-restart
+  ansible.builtin.copy:
+    src: gpg-agent-restart
+    dest: ~/.local/bin/gpg-agent-restart
+    mode: "0744"
+
+# ------------------------------------------------------------------------------
+# Zsh
+
+- name: Add init block to {{ zsh_zprofile_middle }}
+  ansible.builtin.blockinfile:
+    path: "{{ zsh_zprofile_middle }}"
+    marker: "# {mark} :: ANSIBLE MANAGED BLOCK :: {{ role_name }}"
+    block: |
+      export GPG_TTY=$(tty)
+  register: task
+
+- name: Compile {{ zsh_zprofile_middle }}
+  when: task.changed
+  ansible.builtin.command: zsh -c 'zcompile -R {{ zsh_zprofile_middle }}'
+
+# ------------------------------------------------------------------------------
+# Bash
+
+- name: Add init block to {{ bash_profile_middle }}
+  ansible.builtin.blockinfile:
+    path: "{{ bash_profile_middle }}"
+    marker: "# {mark} :: ANSIBLE MANAGED BLOCK :: {{ role_name }}"
+    block: |
+      export GPG_TTY=$(tty)
