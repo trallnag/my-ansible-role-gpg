@@ -6,14 +6,12 @@
     src: gpg-agent.conf
     dest: ~/.gnupg/gpg-agent.conf
     mode: "0644"
-  register: gpg_agent_conf
 
 - name: Place ~/.gnupg/gpg.conf
   ansible.builtin.copy:
     src: gpg.conf
     dest: ~/.gnupg/gpg.conf
     mode: "0644"
-  register: gpg_conf
 
 - name: Place ~/.local/bin/gpg-agent-restart
   ansible.builtin.copy:
